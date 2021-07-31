@@ -1,0 +1,1 @@
+("~/WebstormProjects/WebApp/" "~/WebstormProjects/content-intelligence-UI/")
