@@ -44,3 +44,7 @@ url/
 # Flycheck
 flycheck_*
 .cache/
+recentf
+projectile-bookmarks.eld
+.lsp-session-v1
+
