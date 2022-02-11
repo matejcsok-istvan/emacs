@@ -1,11 +1,17 @@
-(menu-bar-mode -1)
+(toggle-scroll-bar -1)
 (setq evil-want-keybinding nil)
 (setq inhibit-startup-screen t)
 
+;; (package-initialize)
+;; (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+;;                          ("org"   . "https://orgmode.org/elpa/")
+;;                          ("elpa"  . "https://elpa.gnu.org/packages/")))
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
+;; and `package-pinned-packages`. Most users will not need or want to do this.
+;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
-(setq package-archives '(("melpa-stable" . "https://stable.melpa.org/packages/")
-                         ("org"   . "https://orgmode.org/elpa/")
-                         ("elpa"  . "https://elpa.gnu.org/packages/")))
 
 (unless package-archive-contents
   (package-refresh-contents))
@@ -59,6 +65,12 @@
 (require 'treemacs)
 (evil-define-key 'treemacs treemacs-mode-map (kbd "h")      #'treemacs-COLLAPSE-action)
 (evil-define-key 'treemacs treemacs-mode-map (kbd "l")      #'treemacs-RET-action)
+
+(add-to-list 'display-buffer-alist
+                    `(,(rx bos "*helm" (* not-newline) "*" eos)
+                         (display-buffer-in-side-window)
+                         (inhibit-same-window . t)
+                         (window-height . 0.4)))
 
 ;; evil-collection
 (use-package evil-collection
@@ -190,7 +202,7 @@
   (package-install 'projectile))
 (use-package projectile
   :ensure t
-  :pin melpa-stable
+  :pin melpa
   :init
   (projectile-mode +1)
   :bind (:map projectile-mode-map
@@ -216,6 +228,10 @@
 
 (setq tab-width 2) ; or any other preferred value
 (add-hook 'after-init-hook #'global-prettier-mode)
+
+(use-package treemacs)
+(use-package treemacs-evil)
+(use-package treemacs-magit)
 
 (use-package all-the-icons-dired
 :config
@@ -248,9 +264,51 @@
 
 (set-face-attribute 'flycheck-error nil :underline '(:color "red2" :style wave))
 
-(require 'smartparens-config)
-;; Always start smartparens mode in js-mode.
-(add-hook 'js-mode-hook #'smartparens-mode)
+;; dired copy to another open dired buffer
+(setq dired-dwim-target t)
+
+;; autocomplete paired brackets
+(electric-pair-mode 1)
+
+;; enable cousel projectile-mode on startup
+(add-hook 'emacs-startup-hook 'counsel-projectile-mode)
+
+;; dired copy from one buffer too another
+(setq dired-dwim-target t)
+
+;; enable winner mode to navigate back and forth
+;; (winner-mode 1)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ediff                                                                  ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'ediff)
+;; don't start another frame
+;; this is done by default in preluse
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+;; put windows side by side
+(setq ediff-split-window-function (quote split-window-horizontally))
+;;revert windows on exit - needs winner mode
+(winner-mode)
+(add-hook 'ediff-after-quit-hook-internal 'winner-undo)
+(defun update-diff-colors ()
+  "update the colors for diff faces"
+  (set-face-attribute 'diff-added nil
+                      :foreground "white" :background "blue")
+  (set-face-attribute 'diff-removed nil
+                      :foreground "white" :background "red3")
+  (set-face-attribute 'diff-changed nil
+                      :foreground "white" :background "purple"))
+(eval-after-load "diff-mode"
+  '(update-diff-colors))
+(require 'wgrep)
+
+(setq org-capture-templates
+      '(("d" "Taks template" entry
+         (file "chapterly-demo-tasks.org")
+         "* TODO %^{Header} :%^{tag|FEATURE|BUG}\n SCHEDULED: %^t\n %?")))
+
+(setq org-todo-keywords
+      '((sequence "TODO" "IN-PROGRESS" "ON-HOLD" "|" "DONE" "WONT-FIX")))
 
 
 (custom-set-variables
@@ -260,7 +318,7 @@
  ;; If there is more than one, they won't work right.
  '(helm-minibuffer-history-key "M-p")
  '(package-selected-packages
-   '(counsel-projectile smartparens all-the-icons-ibuffer all-the-icons-ivy dashboard treemacs-icons-dired treemacs-evil treemacs-projectile treemacs-magit prettier doom-modeline ag magit evil-magit lsp-mode yasnippet lsp-treemacs helm-lsp projectile hydra flycheck company avy which-key helm-xref dap-mode gruvbox-theme json-mode)))
+   '(wgrep counsel-ag-popup mct helm-ispell git-gutter+ rainbow-mode dired emmet-mode nodejs-repl restclient paredit flycheck-clojure clojure-mode counsel-projectile smartparens all-the-icons-ibuffer all-the-icons-ivy dashboard treemacs-icons-dired treemacs-evil treemacs-projectile treemacs-magit prettier doom-modeline ag magit evil-magit lsp-mode yasnippet lsp-treemacs helm-lsp projectile hydra flycheck company avy which-key helm-xref dap-mode gruvbox-theme json-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

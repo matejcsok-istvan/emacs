@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: functionComponent
+# key: fc
+# --
+
+import React, { FunctionComponent } from "react";
+import styled from "styled-components";
+
+export interface I$1Props {
+
+}
+
+export const ${1:var}: FunctionComponent<I$1Props> = props => {
+return (
+$0
+)
+}

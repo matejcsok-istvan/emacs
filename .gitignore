@@ -48,3 +48,7 @@ recentf
 projectile-bookmarks.eld
 .lsp-session-v1
 
+.dap-breakpoints
+eshell/
+transient/
+tutorial/
